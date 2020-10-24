@@ -40,6 +40,7 @@ THE SOFTWARE.
 #include <sys/wait.h>
 
 #include "ui.h"
+#include "debug.h"
 #include "ui_readline.h"
 
 typedef int (*BarSortFunc_t) (const void *, const void *);
@@ -189,6 +190,7 @@ static CURLcode BarPianoHttpRequest (CURL * const http,
 		req->secure ? settings->rpcTlsPort : "80",
 		req->urlPath);
 	assert (ret >= 0 && ret <= (int) sizeof (url));
+	debugPrint (DEBUG_NETWORK, "← %s\n", url);
 
 	/* save the previous interrupt destination */
 	prevint = interrupted;
@@ -261,6 +263,7 @@ static CURLcode BarPianoHttpRequest (CURL * const http,
 	curl_slist_free_all (list);
 
 	req->responseData = buffer.data;
+	debugPrint (DEBUG_NETWORK, "→ %s\n", req->responseData);
 
 	interrupted = prevint;
 
@@ -649,7 +652,7 @@ char *BarUiSelectMusicId (BarApp_t *app, PianoStation_t *station,
  *	@param format characters
  *	@param replacement for each given format character
  */
-static void BarUiCustomFormat (char *dest, size_t destSize, const char *format,
+void BarUiCustomFormat (char *dest, size_t destSize, const char *format,
 		const char *formatChars, const char **formatVals) {
 	bool haveFormatChar = false;
 
